@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
 import ThemeToggle from "../components/ThemeToggle";
 
 const inter = Inter({
@@ -49,6 +50,7 @@ export default function RootLayout({ children }) {
           <p>Track. Continue. Complete.</p>
           <p>v1.0 • Offline friendly • Private</p>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
