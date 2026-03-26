@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #F8FAF7;
+  --surface: #FFFFFF;
+  --primary: #1F7A63;
+  --accent: #CFAF5A;
+  --text-primary: #1C1C1C;
+  --text-secondary: #6B7280;
+  --border: #E5E7EB;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* System theme fallback (overridden by [data-theme] once user picks). */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0F1412;
+    --surface: #151C19;
+    --primary: #3AA789;
+    --accent: #E6C36A;
+    --text-primary: #F3F4F6;
+    --text-secondary: #9CA3AF;
+    --border: #2A332F;
+    color-scheme: dark;
   }
 }
 
+[data-theme="light"] {
+  --bg: #F8FAF7;
+  --surface: #FFFFFF;
+  --primary: #1F7A63;
+  --accent: #CFAF5A;
+  --text-primary: #1C1C1C;
+  --text-secondary: #6B7280;
+  --border: #E5E7EB;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0F1412;
+  --surface: #151C19;
+  --primary: #3AA789;
+  --accent: #E6C36A;
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --border: #2A332F;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --color-on-primary: #FFFFFF;
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Theme-driven opacity override for the Continue Reading card. */
+[data-theme="dark"] .continue-reading-card {
+  --tw-bg-opacity: 0.1;
+}
+
+.themed-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.themed-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.themed-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.themed-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+
+.themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--primary) 35%, var(--border));
 }
