@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
     name: "Quran Progress Tracker",
-    short_name: "Quran Tracker V2",
+    short_name: "Quran Tracker",
     description:
       "Simple one-page tracker for Quran reading progress by Juz or Surah/Aayah.",
     id: "/",
