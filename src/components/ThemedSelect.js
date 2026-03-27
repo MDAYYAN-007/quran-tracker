@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
-export default function ThemedSelect({
+function ThemedSelect({
   value,
   onChange,
   options,
@@ -68,10 +68,10 @@ export default function ThemedSelect({
               </button>
             </li>
 
-            {options.map((option) => {
+            {options.map((option, index) => {
               const isSelected = String(option.value) === String(value);
               return (
-                <li key={String(option.value)}>
+                <li key={`${String(option.value)}-${String(option.label)}-${index}`}>
                   <button
                     type="button"
                     role="option"
@@ -98,3 +98,5 @@ export default function ThemedSelect({
     </div>
   );
 }
+
+export default memo(ThemedSelect);

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import juzRukuhMap from "@/data/juz-rukuh-map.json";
 import juzSurahAyahRangeMap from "@/data/juz-surah-ayah-range-map.json";
@@ -7,7 +8,15 @@ import toast from "react-hot-toast";
 import SegmentedControl from "@/components/SegmentedControl";
 import ContinueReadingCard from "@/components/ContinueReadingCard";
 import ProgressForm from "@/components/ProgressForm";
-import HistoryPanel from "@/components/HistoryPanel";
+
+const HistoryPanel = dynamic(() => import("@/components/HistoryPanel"), {
+  loading: () => (
+    <section className="rounded-2xl border border-muted bg-surface p-4 sm:p-5">
+      <div className="h-6 w-36 rounded bg-border" />
+      <div className="mt-3 h-16 rounded-2xl bg-border" />
+    </section>
+  ),
+});
 
 const STORAGE_KEY = "quran-tracker";
 const portionParts = ["start", "quarter", "half", "threeQuarter", "end"];
@@ -76,6 +85,15 @@ const formatRukuhPair = (juzRukuh, surahRukuh, surahName) => {
   return `Rukuh ${left}, ${right}${surahName ? ` (${surahName})` : ""}`;
 };
 
+const getJuzRukuhOptionValue = (item) =>
+  `${String(item.juzRukuh)}:${String(item.surahRukuh)}:${String(item.surahNumber)}`;
+
+const normalizeJuzRukuhNumber = (value) => {
+  if (value === null || value === undefined) return "";
+  const raw = String(value);
+  return raw.includes(":") ? raw.split(":")[0] : raw;
+};
+
 export default function Home() {
   const [data, setData] = useState(initialState);
   const [error, setError] = useState("");
@@ -115,17 +133,12 @@ export default function Home() {
         }
       } catch {
         setError("Could not load saved progress. You can save again.");
+      } finally {
+        setIsReady(true);
       }
     });
 
     return () => window.cancelAnimationFrame(rafId);
-  }, []);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setIsReady(true);
-    }, 120);
-    return () => window.clearTimeout(timer);
   }, []);
 
   const currentRukuhOptions = useMemo(() => {
@@ -135,9 +148,12 @@ export default function Home() {
 
   const selectedRukuhMeta = useMemo(() => {
     if (!data.forms.juz.rukuhNumber) return null;
+    if (data.forms.juz.rukuhNumber === "start") return null;
     return (
       currentRukuhOptions.find(
-        (item) => String(item.juzRukuh) === String(data.forms.juz.rukuhNumber),
+        (item) =>
+          String(data.forms.juz.rukuhNumber) === getJuzRukuhOptionValue(item) ||
+          String(item.juzRukuh) === String(data.forms.juz.rukuhNumber),
       ) || null
     );
   }, [currentRukuhOptions, data.forms.juz.rukuhNumber]);
@@ -244,7 +260,7 @@ export default function Home() {
     return Number.isFinite(minAyahStart) ? String(minAyahStart) : "";
   }, [data.forms.surah.surahNumber, data.forms.surah.rukuhNumber]);
 
-  const juzForSelectedAyah = (() => {
+  const juzForSelectedAyah = useMemo(() => {
     const surahNumber = Number(data.forms.surah.surahNumber);
     const ayahNumber = Number(data.forms.surah.ayahNumber);
 
@@ -267,9 +283,9 @@ export default function Home() {
       }
     }
     return null;
-  })();
+  }, [data.forms.surah.ayahNumber, data.forms.surah.surahNumber]);
 
-  const juzForSelectedSurahRukuh = (() => {
+  const juzForSelectedSurahRukuh = useMemo(() => {
     const surahNumber = Number(data.forms.surah.surahNumber);
     const surahRukuhNumber = Number(data.forms.surah.rukuhNumber);
     if (
@@ -293,7 +309,7 @@ export default function Home() {
       }
     }
     return null;
-  })();
+  }, [data.forms.surah.rukuhNumber, data.forms.surah.surahNumber]);
 
   const validate = () => {
     if (data.activeMode === "juz") {
@@ -308,10 +324,16 @@ export default function Home() {
         return "Select Rukuh or Portion.";
       }
       if (data.forms.juz.selectionType === "rukuh") {
-        const r = Number(data.forms.juz.rukuhNumber);
+        if (data.forms.juz.rukuhNumber === "start") {
+          return "";
+        }
         if (
-          !Number.isInteger(r) ||
-          !currentRukuhOptions.some((item) => item.juzRukuh === r)
+          !currentRukuhOptions.some(
+            (item) =>
+              String(data.forms.juz.rukuhNumber) ===
+                getJuzRukuhOptionValue(item) ||
+              String(item.juzRukuh) === String(data.forms.juz.rukuhNumber),
+          )
         ) {
           return "Select a valid Rukuh for this Juz.";
         }
@@ -343,6 +365,9 @@ export default function Home() {
 
     if (surahSelectionType === "ayah") {
       const maxAyah = Number(selectedSurahMaxAyah);
+      if (data.forms.surah.ayahNumber === "start") {
+        return "";
+      }
       if (!Number.isInteger(ayah) || ayah < 1) {
         return "Select an Ayah.";
       }
@@ -353,6 +378,9 @@ export default function Home() {
     }
 
     const selectedSurahRukuh = Number(data.forms.surah.rukuhNumber);
+    if (data.forms.surah.rukuhNumber === "start") {
+      return "";
+    }
     if (
       !Number.isInteger(selectedSurahRukuh) ||
       !selectedSurahRukuhOptions.some(
@@ -384,7 +412,9 @@ export default function Home() {
               selectionType: data.forms.juz.selectionType,
               rukuhNumber:
                 data.forms.juz.selectionType === "rukuh"
-                  ? data.forms.juz.rukuhNumber
+                  ? selectedRukuhMeta
+                    ? String(selectedRukuhMeta.juzRukuh)
+                    : normalizeJuzRukuhNumber(data.forms.juz.rukuhNumber)
                   : "",
               surahRukuhNumber:
                 data.forms.juz.selectionType === "rukuh" && selectedRukuhMeta
@@ -415,7 +445,9 @@ export default function Home() {
               selectionType: data.forms.surah.selectionType || "ayah",
               ayahNumber:
                 (data.forms.surah.selectionType || "ayah") === "rukuh"
-                  ? selectedSurahRukuhRepresentativeAyah
+                  ? data.forms.surah.rukuhNumber === "start"
+                    ? "start"
+                    : selectedSurahRukuhRepresentativeAyah
                   : data.forms.surah.ayahNumber,
               rukuhNumber:
                 (data.forms.surah.selectionType || "ayah") === "rukuh"
@@ -487,6 +519,12 @@ export default function Home() {
   const formatSurahProgress = (payload) => {
     if (!payload) return "Surah · Ayah";
     const name = payload.surahName || getSurahNameByNumber(payload.surahNumber);
+    if (payload.selectionType === "rukuh" && payload.rukuhNumber === "start") {
+      return `Surah ${payload.surahNumber}${name ? ` (${name})` : ""} · Start`;
+    }
+    if (payload.selectionType === "ayah" && payload.ayahNumber === "start") {
+      return `Surah ${payload.surahNumber}${name ? ` (${name})` : ""} · Start`;
+    }
     if (payload.selectionType === "rukuh" && payload.rukuhNumber) {
       return `Surah ${payload.surahNumber}${name ? ` (${name})` : ""} · Rukuh ${payload.rukuhNumber}`;
     }
@@ -495,10 +533,13 @@ export default function Home() {
 
   const formatJuzProgress = (payload) => {
     if (!payload) return "Juz · Start";
+    if (payload.selectionType === "rukuh" && payload.rukuhNumber === "start") {
+      return `Juz ${payload.juzNumber} · Start`;
+    }
     return `Juz ${payload.juzNumber} · ${
       payload.selectionType === "rukuh"
         ? formatRukuhPair(
-            payload.rukuhNumber,
+            normalizeJuzRukuhNumber(payload.rukuhNumber),
             payload.surahRukuhNumber,
             payload.rukuhSurahName,
           )
@@ -539,10 +580,13 @@ export default function Home() {
     }
 
     if (data.forms.juz.selectionType === "rukuh") {
+      if (data.forms.juz.rukuhNumber === "start") return 0;
       const options = currentRukuhOptions;
       if (!options.length) return null;
       const idx = options.findIndex(
-        (o) => String(o.juzRukuh) === String(data.forms.juz.rukuhNumber),
+        (o) =>
+          String(data.forms.juz.rukuhNumber) === getJuzRukuhOptionValue(o) ||
+          String(o.juzRukuh) === String(data.forms.juz.rukuhNumber),
       );
       if (idx < 0) return null;
       if (options.length === 1) return 1;
@@ -659,6 +703,7 @@ export default function Home() {
             juzOptions={juzOptions}
             currentRukuhOptions={currentRukuhOptions}
             formatRukuhPair={formatRukuhPair}
+            getJuzRukuhOptionValue={getJuzRukuhOptionValue}
             juzCompletion={juzCompletion}
             latestProgress={{ latestJuzNumberInt, prevJuz, nextJuz }}
             selectedJuzNumberInt={selectedJuzNumberInt}

@@ -13,16 +13,8 @@ function getSystemTheme() {
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === "undefined") return "light";
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved === "light" || saved === "dark") return saved;
-    } catch {
-      // ignore
-    }
-    return getSystemTheme();
-  });
+  // Keep first render deterministic for SSR/CSR hydration.
+  const [theme, setTheme] = useState("light");
 
   const icon = useMemo(() => {
     // Show the "next" theme icon for clarity.
@@ -113,9 +105,10 @@ function MoonIcon() {
       aria-hidden="true"
     >
       <path
-        d="M21 13.2A8.2 8.2 0 0 1 10.8 3a6.8 6.8 0 1 0 10.2 10.2Z"
+        d="M20.74 13.05a8 8 0 1 1-9.79-9.79 1 1 0 0 1 1.24 1.24 6 6 0 0 0 7.31 7.31 1 1 0 0 1 1.24 1.24Z"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
