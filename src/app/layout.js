@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import ThemeToggle from "../components/ThemeToggle";
 
 const inter = Inter({
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
           <p>v1.0 • Offline friendly • Private</p>
         </footer>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
