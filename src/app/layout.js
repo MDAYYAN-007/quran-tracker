@@ -4,6 +4,8 @@ import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ThemeToggle from "../components/ThemeToggle";
+import InstallPrompt from "@/components/InstallPrompt";
+import InstallAppButton from "@/components/InstallAppButton";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,7 +42,10 @@ export default function RootLayout({ children }) {
           <span className="font-semibold tracking-tight text-lg text-primary">
             Qur&apos;an Progress
           </span>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <InstallAppButton />
+            <ThemeToggle />
+          </div>
         </header>
 
         <main className="w-full max-w-2xl mx-auto px-4 py-6 flex-1">
@@ -51,6 +56,7 @@ export default function RootLayout({ children }) {
           <p>Track. Continue. Complete.</p>
           <p>v1.0 • Offline friendly • Private</p>
         </footer>
+        <InstallPrompt />
         <Analytics />
         <SpeedInsights />
       </body>

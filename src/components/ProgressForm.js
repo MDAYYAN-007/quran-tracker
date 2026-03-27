@@ -1,6 +1,10 @@
 "use client";
 
-import StepCard, { IconBook, IconTarget, IconSteps } from "@/components/StepCard";
+import StepCard, {
+  IconBook,
+  IconTarget,
+  IconSteps,
+} from "@/components/StepCard";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import PortionSelector from "@/components/PortionSelector";
 import QuickJuzSelector from "@/components/QuickJuzSelector";
@@ -17,6 +21,7 @@ export default function ProgressForm({
   juzOptions,
   currentRukuhOptions,
   formatRukuhPair,
+  getJuzRukuhOptionValue,
   juzCompletion,
   latestProgress,
   selectedJuzNumberInt,
@@ -63,7 +68,10 @@ export default function ProgressForm({
                     };
                   })
                 }
-                options={juzOptions.map((j) => ({ value: j, label: `Juz ${j}` }))}
+                options={juzOptions.map((j) => ({
+                  value: j,
+                  label: `Juz ${j}`,
+                }))}
                 placeholder="Select Juz"
                 ariaLabel="All Juz"
               />
@@ -155,14 +163,24 @@ export default function ProgressForm({
                           },
                         }))
                       }
-                      options={currentRukuhOptions.map((r) => ({
-                        value: String(r.juzRukuh),
-                        label: formatRukuhPair(
-                          r.juzRukuh,
-                          r.surahRukuh,
-                          r.surahName,
-                        ),
-                      }))}
+                      options={[
+                        { value: "start", label: "Start of Juz" },
+                        ...currentRukuhOptions.map((r, index) => ({
+                          value: getJuzRukuhOptionValue(r),
+                          label:
+                            index === currentRukuhOptions.length - 1
+                              ? `${formatRukuhPair(
+                                  r.juzRukuh,
+                                  r.surahRukuh,
+                                  r.surahName,
+                                )} · End of Juz`
+                              : formatRukuhPair(
+                                  r.juzRukuh,
+                                  r.surahRukuh,
+                                  r.surahName,
+                                ),
+                        })),
+                      ]}
                       placeholder="Select Rukuh"
                       ariaLabel="Rukuh"
                     />
@@ -272,7 +290,11 @@ export default function ProgressForm({
                   onClick={() =>
                     setFormState((prev) => ({
                       ...prev,
-                      surah: { ...prev.surah, selectionType: "ayah", rukuhNumber: "" },
+                      surah: {
+                        ...prev.surah,
+                        selectionType: "ayah",
+                        rukuhNumber: "",
+                      },
                     }))
                   }
                   className={[
@@ -291,7 +313,11 @@ export default function ProgressForm({
                   onClick={() =>
                     setFormState((prev) => ({
                       ...prev,
-                      surah: { ...prev.surah, selectionType: "rukuh", ayahNumber: "" },
+                      surah: {
+                        ...prev.surah,
+                        selectionType: "rukuh",
+                        ayahNumber: "",
+                      },
                     }))
                   }
                   className={[
@@ -301,7 +327,9 @@ export default function ProgressForm({
                       ? "border-primary bg-primary text-on-primary"
                       : "border-border bg-surface text-text-secondary hover:bg-surface/70 hover:text-text-primary",
                   ].join(" ")}
-                  aria-pressed={(form.surah.selectionType || "ayah") === "rukuh"}
+                  aria-pressed={
+                    (form.surah.selectionType || "ayah") === "rukuh"
+                  }
                 >
                   Rukuh
                 </button>
@@ -332,10 +360,16 @@ export default function ProgressForm({
                         surah: { ...prev.surah, rukuhNumber: nextRukuh },
                       }))
                     }
-                    options={selectedSurahRukuhOptions.map((r) => ({
-                      value: String(r.surahRukuh),
-                      label: `Rukuh ${r.surahRukuh}`,
-                    }))}
+                    options={[
+                      { value: "start", label: "Start of Surah" },
+                      ...selectedSurahRukuhOptions.map((r, index) => ({
+                        value: String(r.surahRukuh),
+                        label:
+                          index === selectedSurahRukuhOptions.length - 1
+                            ? `Rukuh ${r.surahRukuh} · End of Surah`
+                            : `Rukuh ${r.surahRukuh}`,
+                      })),
+                    ]}
                     placeholder="Select Rukuh"
                     ariaLabel="Surah Rukuh"
                   />
@@ -353,10 +387,13 @@ export default function ProgressForm({
                         surah: { ...prev.surah, ayahNumber: nextAyah },
                       }))
                     }
-                    options={ayahOptions.map((a) => ({
-                      value: a,
-                      label: `Ayah ${a}`,
-                    }))}
+                    options={[
+                      { value: "start", label: "Start of Surah" },
+                      ...ayahOptions.map((a) => ({
+                        value: a,
+                        label: `Ayah ${a}`,
+                      })),
+                    ]}
                     placeholder="Select Ayah"
                     ariaLabel="Ayah"
                   />
