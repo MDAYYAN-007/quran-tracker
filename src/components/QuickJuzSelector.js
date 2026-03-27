@@ -5,7 +5,7 @@ export default function QuickJuzSelector({
   onSelectJuz,
   selectedJuzNumber,
 }) {
-  const { latestJuzNumberInt, prevJuz, nextJuz } = latestProgress;
+  const { latestJuzNumberInt } = latestProgress;
   if (
     !Number.isInteger(latestJuzNumberInt) ||
     latestJuzNumberInt < 1 ||
@@ -13,6 +13,11 @@ export default function QuickJuzSelector({
   ) {
     return null;
   }
+
+  const quickJuzOptions =
+    latestJuzNumberInt >= 29
+      ? [28, 29, 30]
+      : [latestJuzNumberInt, latestJuzNumberInt + 1, latestJuzNumberInt + 2];
 
   return (
     <div className="rounded-2xl border border-muted bg-surface p-4">
@@ -26,51 +31,22 @@ export default function QuickJuzSelector({
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => prevJuz && onSelectJuz(prevJuz)}
-          disabled={prevJuz === null || prevJuz < 1}
-          className={[
-            "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-            Number.isInteger(prevJuz) && selectedJuzNumber === prevJuz
-              ? "border-primary bg-primary text-on-primary"
-              : "border-border bg-surface text-text-secondary hover:bg-surface/70 hover:text-text-primary",
-            "disabled:cursor-not-allowed disabled:opacity-40",
-          ].join(" ")}
-        >
-          {prevJuz && prevJuz >= 1 ? `Juz ${prevJuz}` : "Prev"}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSelectJuz(latestJuzNumberInt)}
-          className={[
-            "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-            selectedJuzNumber === latestJuzNumberInt
-              ? "border-primary bg-primary text-on-primary"
-              : "border-border bg-surface text-text-secondary hover:bg-surface/70 hover:text-text-primary",
-          ].join(" ")}
-        >
-          Juz {latestJuzNumberInt}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => nextJuz && onSelectJuz(nextJuz)}
-          disabled={nextJuz === null || nextJuz > 30}
-          className={[
-            "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-            Number.isInteger(nextJuz) && selectedJuzNumber === nextJuz
-              ? "border-primary bg-primary text-on-primary"
-              : "border-border bg-surface text-text-secondary hover:bg-surface/70 hover:text-text-primary",
-            "disabled:cursor-not-allowed disabled:opacity-40",
-          ].join(" ")}
-        >
-          {nextJuz && nextJuz <= 30 ? `Juz ${nextJuz}` : "Next"}
-        </button>
+        {quickJuzOptions.map((juzNumber) => (
+          <button
+            key={juzNumber}
+            type="button"
+            onClick={() => onSelectJuz(juzNumber)}
+            className={[
+              "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+              selectedJuzNumber === juzNumber
+                ? "border-primary bg-primary text-on-primary"
+                : "border-border bg-surface text-text-secondary hover:bg-surface/70 hover:text-text-primary",
+            ].join(" ")}
+          >
+            Juz {juzNumber}
+          </button>
+        ))}
       </div>
     </div>
   );

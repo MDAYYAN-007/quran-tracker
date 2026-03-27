@@ -68,10 +68,10 @@ export default function ThemedSelect({
               </button>
             </li>
 
-            {options.map((option) => {
+            {options.map((option, index) => {
               const isSelected = String(option.value) === String(value);
               return (
-                <li key={String(option.value)}>
+                <li key={`${String(option.value)}-${String(option.label)}-${index}`}>
                   <button
                     type="button"
                     role="option"
