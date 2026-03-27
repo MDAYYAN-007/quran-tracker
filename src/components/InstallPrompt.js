@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const PROMPT_DISMISSED_KEY = "installPromptDismissed";
 const PROMPT_COOLDOWN_MS = 5 * 24 * 60 * 60 * 1000; // 5 days
@@ -11,6 +12,8 @@ export default function InstallPrompt() {
   const [isMobile, setIsMobile] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isBlocked, setIsBlocked] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const autoHideTimeoutRef = useRef(null);
 
   const isBlockedByCooldown = () => {
     const ts = Number(localStorage.getItem(PROMPT_DISMISSED_KEY) || "0");
@@ -24,6 +27,7 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    setMounted(true);
 
     setIsBlocked(isBlockedByCooldown());
 
@@ -32,17 +36,16 @@ export default function InstallPrompt() {
         window.matchMedia("(display-mode: standalone)").matches ||
         window.navigator.standalone === true;
       setIsInstalled(standalone);
-      setIsMobile(window.innerWidth < 768);
+      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      const isMobileWidth = window.matchMedia("(max-width: 767px)").matches;
+      setIsMobile(coarsePointer && isMobileWidth);
     };
 
     refreshState();
-    window.addEventListener("resize", refreshState);
 
     const onBeforeInstallPrompt = (event) => {
       event.preventDefault();
       setDeferredPrompt(event);
-      // If install is available now, allow the banner regardless of old cooldown.
-      setIsBlocked(false);
     };
 
     const onInstalled = () => {
@@ -55,7 +58,6 @@ export default function InstallPrompt() {
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
-      window.removeEventListener("resize", refreshState);
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
@@ -70,12 +72,17 @@ export default function InstallPrompt() {
   }, [deferredPrompt, isBlocked, isInstalled, isMobile]);
 
   useEffect(() => {
-    if (!visible) return;
-    const timer = window.setTimeout(() => {
+    if (!visible) return undefined;
+    autoHideTimeoutRef.current = window.setTimeout(() => {
       setVisible(false);
       markDismissed();
     }, 6000);
-    return () => window.clearTimeout(timer);
+    return () => {
+      if (autoHideTimeoutRef.current) {
+        window.clearTimeout(autoHideTimeoutRef.current);
+        autoHideTimeoutRef.current = null;
+      }
+    };
   }, [visible]);
 
   const dismiss = () => {
@@ -91,23 +98,24 @@ export default function InstallPrompt() {
     setDeferredPrompt(null);
   };
 
-  return (
-    <>
-      {visible && !isInstalled && isMobile && deferredPrompt ? (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 rounded-2xl shadow-xl bg-primary text-white px-5 py-4 flex items-center justify-between gap-4 max-w-sm w-[90%] z-50">
-          <div>
-            <p className="text-sm font-semibold">Install Qur&apos;an Tracker</p>
-            <p className="text-sm text-white/90">Resume reading instantly 📖</p>
-          </div>
-          <button
-            type="button"
-            onClick={install}
-            className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold hover:bg-white/30 transition-colors"
-          >
-            Install
-          </button>
-        </div>
-      ) : null}
-    </>
+  if (!mounted || !visible || isInstalled || !isMobile || !deferredPrompt) {
+    return null;
+  }
+
+  return createPortal(
+    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 rounded-2xl shadow-xl bg-primary text-white px-5 py-4 flex items-center justify-between gap-4 max-w-sm w-[90%] z-50">
+      <div>
+        <p className="text-sm font-semibold">Install Qur&apos;an Tracker</p>
+        <p className="text-sm text-white/90">Resume reading instantly 📖</p>
+      </div>
+      <button
+        type="button"
+        onClick={install}
+        className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold hover:bg-white/30 transition-colors"
+      >
+        Install
+      </button>
+    </div>,
+    document.body,
   );
 }

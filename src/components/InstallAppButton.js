@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 const APP_INSTALLED_KEY = "quranTrackerAppInstalled";
 const INSTALLING_TIMEOUT_MS = 30000;
 const INSTALL_CONFIRMATION_DELAY_MS = 10000;
+const BUTTON_PLACEHOLDER_CLASS = "inline-block h-8 w-[108px]";
 
 export default function InstallAppButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -70,9 +71,7 @@ export default function InstallAppButton() {
       event.preventDefault();
       setDeferredPrompt(event);
       installFinalizedRef.current = false;
-      // If prompt is available again, app is not currently installed.
-      localStorage.setItem(APP_INSTALLED_KEY, "false");
-      setHasInstalledRecord(false);
+      // Keep prior install state stable until explicit install confirmation.
     };
 
     const onInstalled = () => {
@@ -120,9 +119,6 @@ export default function InstallAppButton() {
           if (Array.isArray(apps) && apps.length > 0) {
             localStorage.setItem(APP_INSTALLED_KEY, "true");
             setHasInstalledRecord(true);
-          } else {
-            localStorage.setItem(APP_INSTALLED_KEY, "false");
-            setHasInstalledRecord(false);
           }
         })
         .catch(() => {
@@ -140,17 +136,21 @@ export default function InstallAppButton() {
   // Never show this button inside the installed app window.
   if (isStandalone) return null;
 
+  const showInstalled = hasInstalledRecord;
+  const showInstalling = !showInstalled && isInstalling;
+  const showInstall = !showInstalled && !showInstalling && Boolean(deferredPrompt);
+
   return (
     <>
-      {hasInstalledRecord ? (
+      {showInstalled ? (
         <span className="text-sm px-3 py-1.5 rounded-lg border border-primary/40 text-primary bg-primary/5">
           App Installed
         </span>
-      ) : isInstalling ? (
+      ) : showInstalling ? (
         <span className="text-sm px-3 py-1.5 rounded-lg border border-primary/40 text-primary bg-primary/5">
           Installing...
         </span>
-      ) : deferredPrompt ? (
+      ) : showInstall ? (
         <button
           type="button"
           onClick={async () => {
@@ -171,7 +171,9 @@ export default function InstallAppButton() {
         >
           Install App
         </button>
-      ) : null}
+      ) : (
+        <span className={`${BUTTON_PLACEHOLDER_CLASS} invisible`} aria-hidden="true" />
+      )}
 
       {showSuccessCard && isMounted
         ? createPortal(

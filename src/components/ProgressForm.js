@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import StepCard, {
   IconBook,
   IconTarget,
@@ -10,7 +11,7 @@ import PortionSelector from "@/components/PortionSelector";
 import QuickJuzSelector from "@/components/QuickJuzSelector";
 import ThemedSelect from "@/components/ThemedSelect";
 
-export default function ProgressForm({
+function ProgressForm({
   mode,
   formState,
   setFormState,
@@ -454,3 +455,5 @@ export default function ProgressForm({
     </section>
   );
 }
+
+export default memo(ProgressForm);

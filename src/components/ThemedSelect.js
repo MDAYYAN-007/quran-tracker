@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
-export default function ThemedSelect({
+function ThemedSelect({
   value,
   onChange,
   options,
@@ -98,3 +98,5 @@ export default function ThemedSelect({
     </div>
   );
 }
+
+export default memo(ThemedSelect);
