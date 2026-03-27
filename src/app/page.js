@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import juzRukuhMap from "@/data/juz-rukuh-map.json";
 import juzSurahAyahRangeMap from "@/data/juz-surah-ayah-range-map.json";
@@ -7,7 +8,15 @@ import toast from "react-hot-toast";
 import SegmentedControl from "@/components/SegmentedControl";
 import ContinueReadingCard from "@/components/ContinueReadingCard";
 import ProgressForm from "@/components/ProgressForm";
-import HistoryPanel from "@/components/HistoryPanel";
+
+const HistoryPanel = dynamic(() => import("@/components/HistoryPanel"), {
+  loading: () => (
+    <section className="rounded-2xl border border-muted bg-surface p-4 sm:p-5">
+      <div className="h-6 w-36 rounded bg-border" />
+      <div className="mt-3 h-16 rounded-2xl bg-border" />
+    </section>
+  ),
+});
 
 const STORAGE_KEY = "quran-tracker";
 const portionParts = ["start", "quarter", "half", "threeQuarter", "end"];
@@ -124,17 +133,12 @@ export default function Home() {
         }
       } catch {
         setError("Could not load saved progress. You can save again.");
+      } finally {
+        setIsReady(true);
       }
     });
 
     return () => window.cancelAnimationFrame(rafId);
-  }, []);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setIsReady(true);
-    }, 120);
-    return () => window.clearTimeout(timer);
   }, []);
 
   const currentRukuhOptions = useMemo(() => {
@@ -256,7 +260,7 @@ export default function Home() {
     return Number.isFinite(minAyahStart) ? String(minAyahStart) : "";
   }, [data.forms.surah.surahNumber, data.forms.surah.rukuhNumber]);
 
-  const juzForSelectedAyah = (() => {
+  const juzForSelectedAyah = useMemo(() => {
     const surahNumber = Number(data.forms.surah.surahNumber);
     const ayahNumber = Number(data.forms.surah.ayahNumber);
 
@@ -279,9 +283,9 @@ export default function Home() {
       }
     }
     return null;
-  })();
+  }, [data.forms.surah.ayahNumber, data.forms.surah.surahNumber]);
 
-  const juzForSelectedSurahRukuh = (() => {
+  const juzForSelectedSurahRukuh = useMemo(() => {
     const surahNumber = Number(data.forms.surah.surahNumber);
     const surahRukuhNumber = Number(data.forms.surah.rukuhNumber);
     if (
@@ -305,7 +309,7 @@ export default function Home() {
       }
     }
     return null;
-  })();
+  }, [data.forms.surah.rukuhNumber, data.forms.surah.surahNumber]);
 
   const validate = () => {
     if (data.activeMode === "juz") {
