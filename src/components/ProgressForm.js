@@ -96,7 +96,7 @@ function ProgressForm({
                     }))
                   }
                   className={[
-                    "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
+                    "cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                     form.juz.selectionType === "portion"
                       ? "border-primary bg-primary text-on-primary"
@@ -121,7 +121,7 @@ function ProgressForm({
                     }))
                   }
                   className={[
-                    "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
+                    "cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                     form.juz.selectionType === "rukuh"
                       ? "border-primary bg-primary text-on-primary"
@@ -299,7 +299,7 @@ function ProgressForm({
                     }))
                   }
                   className={[
-                    "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
+                    "cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                     (form.surah.selectionType || "ayah") === "ayah"
                       ? "border-primary bg-primary text-on-primary"
@@ -322,7 +322,7 @@ function ProgressForm({
                     }))
                   }
                   className={[
-                    "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
+                    "cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                     (form.surah.selectionType || "ayah") === "rukuh"
                       ? "border-primary bg-primary text-on-primary"

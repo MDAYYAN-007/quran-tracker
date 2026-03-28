@@ -35,7 +35,7 @@ function ThemedSelect({
         aria-expanded={open}
         aria-label={ariaLabel}
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-left text-sm text-text-primary outline-none transition-all duration-200 ease-out focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        className="w-full cursor-pointer rounded-xl border border-border bg-surface px-3 py-2 text-left text-sm text-text-primary outline-none transition-all duration-200 ease-out focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         <span className={selected ? "text-text-primary" : "text-text-secondary"}>
           {selected ? selected.label : placeholder}
@@ -58,7 +58,7 @@ function ThemedSelect({
                   setOpen(false);
                 }}
                 className={[
-                  "w-full rounded-lg px-3 py-2 text-left text-sm transition-colors",
+                  "w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm transition-colors",
                   value === ""
                     ? "bg-primary/15 text-primary"
                     : "text-text-secondary hover:bg-primary/10 hover:text-primary",
@@ -81,7 +81,7 @@ function ThemedSelect({
                       setOpen(false);
                     }}
                     className={[
-                      "w-full rounded-lg px-3 py-2 text-left text-sm transition-colors",
+                      "w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm transition-colors",
                       isSelected
                         ? "bg-primary/15 text-primary"
                         : "text-text-primary hover:bg-primary/10 hover:text-primary",

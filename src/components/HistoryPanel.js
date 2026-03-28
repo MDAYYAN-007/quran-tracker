@@ -48,7 +48,7 @@ export default function HistoryPanel({
         <button
           type="button"
           onClick={handleClearHistory}
-          className="mt-3 text-xs text-muted-foreground hover:text-destructive transition-colors"
+          className="mt-3 cursor-pointer text-xs text-muted-foreground hover:text-destructive transition-colors"
         >
           Clear history
         </button>
@@ -56,7 +56,11 @@ export default function HistoryPanel({
 
       {isConfirmOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-4 shadow-lg">
+          <div
+            className="w-full max-w-sm rounded-2xl border border-border bg-surface p-4 shadow-lg"
+            role="dialog"
+            aria-modal="true"
+          >
             <h3 className="text-sm font-semibold text-text-primary">
               Clear history?
             </h3>
@@ -67,14 +71,14 @@ export default function HistoryPanel({
               <button
                 type="button"
                 onClick={() => setIsConfirmOpen(false)}
-                className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface/70 transition-colors"
+                className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface/70 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={confirmClear}
-                className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 transition-opacity"
+                className="cursor-pointer rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 transition-opacity"
               >
                 Clear
               </button>

@@ -20,7 +20,7 @@ export default function PortionSelector({ value, onChange }) {
             onClick={() => onChange(p.value)}
             aria-pressed={isActive}
             className={[
-              "rounded-full px-3 py-2 text-xs font-medium transition-all duration-200 ease-out",
+              "cursor-pointer rounded-full px-3 py-2 text-xs font-medium transition-all duration-200 ease-out",
               "border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               isActive
                 ? "border-primary bg-primary text-on-primary"

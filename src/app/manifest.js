@@ -7,6 +7,10 @@ export default function manifest() {
     id: "/",
     start_url: "/",
     scope: "/",
+    // Lets navigator.getInstalledRelatedApps() match this PWA after install (reload).
+    related_applications: [
+      { platform: "webapp", url: "/manifest.webmanifest" },
+    ],
     display: "standalone",
     background_color: "#0F1412",
     theme_color: "#1F7A63",
