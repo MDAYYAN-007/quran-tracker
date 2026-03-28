@@ -3,9 +3,11 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import ThemeToggle from "../components/ThemeToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 import InstallPrompt from "@/components/InstallPrompt";
 import InstallAppButton from "@/components/InstallAppButton";
+import { InstallProvider } from "@/components/InstallContext";
+import PwaRegister from "@/components/PwaRegister";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -40,25 +42,28 @@ export default function RootLayout({ children }) {
             duration: 2000,
           }}
         />
-        <header className="sticky top-0 z-40 flex items-center justify-between px-6 py-3 border-b bg-background/70 backdrop-blur">
-          <span className="font-semibold tracking-tight text-lg text-primary">
-            Qur&apos;an Progress
-          </span>
-          <div className="flex items-center gap-2 min-h-10">
-            <InstallAppButton />
-            <ThemeToggle />
-          </div>
-        </header>
+        <InstallProvider>
+          <header className="sticky top-0 z-40 flex items-center justify-between px-6 py-3 border-b bg-background/70 backdrop-blur">
+            <span className="font-semibold tracking-tight text-lg text-primary">
+              Qur&apos;an Progress
+            </span>
+            <div className="flex items-center gap-2 min-h-10">
+              <InstallAppButton />
+              <ThemeToggle />
+            </div>
+          </header>
 
-        <main className="w-full max-w-2xl mx-auto px-4 py-6 flex-1">
-          {children}
-        </main>
+          <main className="w-full max-w-[720px] mx-auto px-4 flex-1">
+            {children}
+          </main>
 
-        <footer className="border-t text-center py-2 text-xs opacity-70">
-          <p>Track. Continue. Complete.</p>
-          <p>v1.0 • Offline friendly • Private</p>
-        </footer>
-        <InstallPrompt />
+          <footer className="border-t text-center py-2 text-xs opacity-70">
+            <p>Track. Continue. Complete.</p>
+            <p>v1.0 • Offline friendly • Private</p>
+          </footer>
+          <InstallPrompt />
+        </InstallProvider>
+        {isProduction ? <PwaRegister /> : null}
         {isProduction ? <Analytics /> : null}
         {isProduction ? <SpeedInsights /> : null}
       </body>

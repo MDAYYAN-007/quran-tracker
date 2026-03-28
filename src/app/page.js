@@ -19,15 +19,10 @@ const HistoryPanel = dynamic(() => import("@/components/HistoryPanel"), {
 });
 
 const STORAGE_KEY = "quran-tracker";
+const STORAGE_VERSION = 1;
+const MAX_HISTORY_ITEMS = 5;
 const portionParts = ["start", "quarter", "half", "threeQuarter", "end"];
 
-const portionPartLabel = {
-  start: "Start of Juz",
-  quarter: "Quarter",
-  half: "Half",
-  threeQuarter: "3/4",
-  end: "End of Juz",
-};
 const portionCompactLabel = {
   start: "Start",
   quarter: "1/4",
@@ -94,6 +89,35 @@ const normalizeJuzRukuhNumber = (value) => {
   return raw.includes(":") ? raw.split(":")[0] : raw;
 };
 
+const juzPayloadsEqual = (a, b) => {
+  if (!a || !b) return false;
+  return (
+    String(a.juzNumber) === String(b.juzNumber) &&
+    String(a.selectionType) === String(b.selectionType) &&
+    String(a.rukuhNumber ?? "") === String(b.rukuhNumber ?? "") &&
+    String(a.portion ?? "") === String(b.portion ?? "")
+  );
+};
+
+const surahPayloadsEqual = (a, b) => {
+  if (!a || !b) return false;
+  return (
+    String(a.surahNumber) === String(b.surahNumber) &&
+    String(a.selectionType ?? "ayah") === String(b.selectionType ?? "ayah") &&
+    String(a.ayahNumber ?? "") === String(b.ayahNumber ?? "") &&
+    String(a.rukuhNumber ?? "") === String(b.rukuhNumber ?? "")
+  );
+};
+
+const historyEntriesDuplicate = (prev, next) => {
+  if (!prev || !next) return false;
+  if (prev.mode !== next.mode) return false;
+  if (prev.mode === "juz") {
+    return juzPayloadsEqual(prev.payload, next.payload);
+  }
+  return surahPayloadsEqual(prev.payload, next.payload);
+};
+
 export default function Home() {
   const [data, setData] = useState(initialState);
   const [error, setError] = useState("");
@@ -102,12 +126,13 @@ export default function Home() {
 
   const persistProgress = (nextData) => {
     const persisted = {
+      version: STORAGE_VERSION,
       latest: {
         juz: nextData.latest?.juz ?? null,
         surah: nextData.latest?.surah ?? null,
       },
       history: Array.isArray(nextData.history)
-        ? nextData.history.slice(0, 5)
+        ? nextData.history.slice(0, MAX_HISTORY_ITEMS)
         : [],
     };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
@@ -120,16 +145,23 @@ export default function Home() {
         const raw = window.localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          setData({
-            ...initialState,
-            latest: {
-              juz: parsed.latest?.juz ?? null,
-              surah: parsed.latest?.surah ?? null,
-            },
-            history: Array.isArray(parsed.history)
-              ? parsed.history.slice(0, 5)
-              : [],
-          });
+          if (
+            parsed &&
+            typeof parsed === "object" &&
+            parsed.version === STORAGE_VERSION &&
+            ("latest" in parsed || "history" in parsed)
+          ) {
+            setData({
+              ...initialState,
+              latest: {
+                juz: parsed.latest?.juz ?? null,
+                surah: parsed.latest?.surah ?? null,
+              },
+              history: Array.isArray(parsed.history)
+                ? parsed.history.slice(0, MAX_HISTORY_ITEMS)
+                : [],
+            });
+          }
         }
       } catch {
         setError("Could not load saved progress. You can save again.");
@@ -457,14 +489,14 @@ export default function Home() {
           };
 
     const lastEntry = data.history[0];
-    if (
-      lastEntry &&
-      JSON.stringify(lastEntry.payload) === JSON.stringify(historyEntry.payload)
-    ) {
+    if (lastEntry && historyEntriesDuplicate(lastEntry, historyEntry)) {
       return;
     }
 
-    const updatedHistory = [historyEntry, ...data.history].slice(0, 5);
+    const updatedHistory = [historyEntry, ...data.history].slice(
+      0,
+      MAX_HISTORY_ITEMS,
+    );
     const updatedData = {
       ...data,
       latest: {
@@ -508,7 +540,7 @@ export default function Home() {
 
   const latestJuz = data.latest.juz;
   const latestSurah = data.latest.surah;
-  const recentHistory = data.history.slice(0, 8);
+  const recentHistory = data.history.slice(0, MAX_HISTORY_ITEMS);
 
   const getSurahNameByNumber = (surahNumber) => {
     if (surahNumber === null || surahNumber === undefined || surahNumber === "")
@@ -656,7 +688,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="mx-auto w-full max-w-[720px] px-4 py-8 sm:py-12 space-y-4">
+      <div className="w-full py-8 sm:py-12 space-y-4">
         <header className="flex items-start gap-4">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">
@@ -724,7 +756,7 @@ export default function Home() {
             onClearHistory={clearHistory}
           />
         </div>
-      </main>
+      </div>
     </>
   );
 }

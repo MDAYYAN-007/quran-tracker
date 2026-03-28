@@ -37,7 +37,7 @@ export default function QuickJuzSelector({
             type="button"
             onClick={() => onSelectJuz(juzNumber)}
             className={[
-              "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
+              "cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ease-out",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               selectedJuzNumber === juzNumber
                 ? "border-primary bg-primary text-on-primary"

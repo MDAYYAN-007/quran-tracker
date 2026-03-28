@@ -89,6 +89,15 @@ npm run start
 
 This app includes a web manifest and app icons for install support on desktop and mobile.
 
+Offline support is powered by `next-pwa` in production builds:
+
+- The app shell and static assets are cached after first successful load.
+- In normal offline use, the app opens the same main tracker page (`/`).
+- A backup offline route (`/offline`) appears only if the shell cache is unavailable.
+- Service worker caching is disabled in development mode.
+
+`next-pwa` normally injects its `register.js` into the legacy webpack entry `main.js`. With the **App Router**, Next.js uses `main` / `main-app` entries instead, so that injection often does not run. This project loads `next-pwa/register` from [`src/components/PwaRegister.js`](src/components/PwaRegister.js) in production so the service worker actually registers.
+
 If icon updates do not appear immediately after changes:
 
 1. Hard refresh the browser (`Ctrl+Shift+R`)

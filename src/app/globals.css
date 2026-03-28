@@ -1,49 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #F8FAF7;
-  --surface: #FFFFFF;
-  --primary: #1F7A63;
-  --accent: #CFAF5A;
-  --text-primary: #1C1C1C;
-  --text-secondary: #6B7280;
-  --border: #E5E7EB;
+  --bg: #f8faf7;
+  --surface: #ffffff;
+  --primary: #1f7a63;
+  --accent: #cfaf5a;
+  --text-primary: #1c1c1c;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
   color-scheme: light;
 }
 
 /* System theme fallback (overridden by [data-theme] once user picks). */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0F1412;
-    --surface: #151C19;
-    --primary: #3AA789;
-    --accent: #E6C36A;
-    --text-primary: #F3F4F6;
-    --text-secondary: #9CA3AF;
-    --border: #2A332F;
+    --bg: #0f1412;
+    --surface: #151c19;
+    --primary: #3aa789;
+    --accent: #e6c36a;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --border: #2a332f;
     color-scheme: dark;
   }
 }
 
 [data-theme="light"] {
-  --bg: #F8FAF7;
-  --surface: #FFFFFF;
-  --primary: #1F7A63;
-  --accent: #CFAF5A;
-  --text-primary: #1C1C1C;
-  --text-secondary: #6B7280;
-  --border: #E5E7EB;
+  --bg: #f8faf7;
+  --surface: #ffffff;
+  --primary: #1f7a63;
+  --accent: #cfaf5a;
+  --text-primary: #1c1c1c;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: #0F1412;
-  --surface: #151C19;
-  --primary: #3AA789;
-  --accent: #E6C36A;
-  --text-primary: #F3F4F6;
-  --text-secondary: #9CA3AF;
-  --border: #2A332F;
+  --bg: #0f1412;
+  --surface: #151c19;
+  --primary: #3aa789;
+  --accent: #e6c36a;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --border: #2a332f;
   color-scheme: dark;
 }
 
@@ -55,9 +55,10 @@
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border);
-  --color-on-primary: #FFFFFF;
+  --color-on-primary: #ffffff;
   --font-sans: var(--font-inter);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
 }
 
