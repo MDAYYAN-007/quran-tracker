@@ -123,7 +123,7 @@ scripts/               # Optional tooling (e.g. icon rasterization from canonica
 **Clone the repository**
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/MDAYYAN-007/quran-tracker
 cd quran-tracker
 ```
 
